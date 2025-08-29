@@ -88,6 +88,8 @@ describe('UsersController', () => {
         ...mockCurrentUser,
         id: 5,
         email: 'different@example.com',
+        hashPassword: jest.fn(),
+        validatePassword: jest.fn(),
       };
 
       const expectedProfile = {
@@ -146,6 +148,8 @@ describe('UsersController', () => {
         ...mockCurrentUser,
         id: 2,
         email: 'user@example.com',
+        hashPassword: jest.fn(),
+        validatePassword: jest.fn(),
       };
 
       const updateProfileDto: UpdateProfileDto = {

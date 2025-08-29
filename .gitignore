@@ -38,3 +38,6 @@ postgres_data/
 # Temporary files
 tmp/
 temp/
+
+# Generated files
+frontend/src/api

@@ -15,29 +15,29 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
-  address_line_1: string;
+  @Column({ type: String, nullable: true })
+  address_line_1: string | null;
 
-  @Column({ nullable: true })
-  address_line_2: string;
+  @Column({ type: String, nullable: true })
+  address_line_2: string | null;
 
-  @Column({ nullable: true })
-  phone_number: string;
+  @Column({ type: String, nullable: true })
+  phone_number: string | null;
 
-  @Column({ nullable: true })
-  city: string;
+  @Column({ type: String, nullable: true })
+  city: string | null;
 
-  @Column({ nullable: true })
-  state: string;
+  @Column({ type: String, nullable: true })
+  state: string | null;
 
-  @Column({ nullable: true })
-  country: string;
+  @Column({ type: String, nullable: true })
+  country: string | null;
 
-  @Column({ nullable: true })
-  nok_name: string;
+  @Column({ type: String, nullable: true })
+  nok_name: string | null;
 
-  @Column({ nullable: true })
-  nok_phone_number: string;
+  @Column({ type: String, nullable: true })
+  nok_phone_number: string | null;
 
   @BeforeInsert()
   async hashPassword() {
