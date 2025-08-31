@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
@@ -14,6 +15,9 @@ import { JwtAuthGuard } from '../src/auth/guards/jwt-auth.guard';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.test'],
+    }),
+    CacheModule.register({
+      isGlobal: true,
     }),
     TypeOrmModule.forRoot(databaseTestConfig()),
     AuthModule,

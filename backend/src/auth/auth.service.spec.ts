@@ -23,6 +23,11 @@ describe('AuthService', () => {
   const mockJwtService = {
     sign: jest.fn(),
   };
+  
+  const mockCacheManager = {
+    get: jest.fn().mockResolvedValue(null),
+    set: jest.fn().mockResolvedValue(undefined),
+  } as any;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -35,6 +40,10 @@ describe('AuthService', () => {
         {
           provide: JwtService,
           useValue: mockJwtService,
+        },
+        {
+          provide: 'CACHE_MANAGER',
+          useValue: mockCacheManager,
         },
       ],
     }).compile();

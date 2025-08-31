@@ -98,7 +98,7 @@ export class AuthService {
   }
 
   async logout(token: string): Promise<void> {
-    const decoded = this.jwtService.decode(token) as any;
+    const decoded = this.jwtService.decode(token);
     if (!decoded) {
       throw new UnauthorizedException('Invalid token');
     }

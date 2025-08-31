@@ -11,6 +11,7 @@ describe('JwtStrategy', () => {
 
   const mockAuthService = {
     validateUser: jest.fn(),
+    isTokenBlacklisted: jest.fn().mockResolvedValue(false),
   };
 
   const mockConfigService = {
@@ -43,6 +44,7 @@ describe('JwtStrategy', () => {
   describe('validate', () => {
     it('should return user when validation is successful', async () => {
       const payload = { sub: 1, email: 'test@example.com' };
+      const req = { headers: { authorization: 'Bearer fake-token' } } as any;
       const mockUser: User = {
         id: 1,
         email: 'test@example.com',
@@ -62,7 +64,7 @@ describe('JwtStrategy', () => {
 
       mockAuthService.validateUser.mockResolvedValue(mockUser);
 
-      const result = await strategy.validate(payload);
+      const result = await strategy.validate(req, payload);
 
       expect(authService.validateUser).toHaveBeenCalledWith(payload.sub);
       expect(result).toEqual(mockUser);
@@ -70,10 +72,11 @@ describe('JwtStrategy', () => {
 
     it('should throw UnauthorizedException when user is not found', async () => {
       const payload = { sub: 999, email: 'nonexistent@example.com' };
+      const req = { headers: { authorization: 'Bearer fake-token' } } as any;
 
       mockAuthService.validateUser.mockResolvedValue(null);
 
-      await expect(strategy.validate(payload)).rejects.toThrow(
+      await expect(strategy.validate(req, payload)).rejects.toThrow(
         UnauthorizedException,
       );
       expect(authService.validateUser).toHaveBeenCalledWith(payload.sub);
@@ -82,10 +85,11 @@ describe('JwtStrategy', () => {
     it('should handle validateUser throwing an exception', async () => {
       const payload = { sub: 1, email: 'test@example.com' };
       const error = new UnauthorizedException('User validation failed');
+      const req = { headers: { authorization: 'Bearer fake-token' } } as any;
 
       mockAuthService.validateUser.mockRejectedValue(error);
 
-      await expect(strategy.validate(payload)).rejects.toThrow(error);
+      await expect(strategy.validate(req, payload)).rejects.toThrow(error);
       expect(authService.validateUser).toHaveBeenCalledWith(payload.sub);
     });
   });
