@@ -12,4 +12,6 @@ export const databaseConfig = (): TypeOrmModuleOptions => ({
   logging: process.env.NODE_ENV === 'development',
   migrations: [__dirname + '/../migrations/*{.ts,.js}'],
   migrationsRun: false,
+  retryAttempts: 20,
+  retryDelay: 3000,
 });

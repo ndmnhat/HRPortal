@@ -12,6 +12,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - hr_portal_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hr_portal || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
 
   redis:
     image: redis:7-alpine
@@ -20,6 +26,12 @@ services:
       - "6379:6379"
     networks:
       - hr_portal_network
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
 
   backend:
     build:
@@ -37,15 +49,32 @@ services:
       DB_NAME: hr_portal
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      OPENAPI_OUTPUT_PATH: /shared/openapi.json
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - ./backend:/app
       - /app/node_modules
+      - openapi_spec:/shared
     networks:
       - hr_portal_network
-    command: npm run start:prod
+    command: >-
+      sh -c "
+        until node -e \"require('net').createConnection(5432,'postgres').on('connect',()=>process.exit(0)).on('error',()=>process.exit(1))\"; do echo 'Waiting for postgres...'; sleep 2; done && \
+        until node -e \"require('net').createConnection(6379,'redis').on('connect',()=>process.exit(0)).on('error',()=>process.exit(1))\"; do echo 'Waiting for redis...'; sleep 2; done && \
+        npm ci && \
+        npm run build && \
+        npm run start:prod
+      "
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000/openapi.json',res=>process.exit(res.statusCode===200?0:1)).on('error',()=>process.exit(1))\""]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
 
   frontend:
     build:
@@ -56,18 +85,21 @@ services:
       - "3001:3001"
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:3000
+      OPENAPI_SPEC_URL: http://backend:3000/openapi.json
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     volumes:
       - ./frontend:/app
       - /app/node_modules
       - /app/.next
+      - openapi_spec:/shared:ro
     networks:
       - hr_portal_network
-    command: npm run start
 
 volumes:
   postgres_data:
+  openapi_spec:
 
 networks:
   hr_portal_network:

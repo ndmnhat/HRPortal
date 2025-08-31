@@ -31,9 +31,29 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  // Export OpenAPI spec if running in build mode
+  // Serve OpenAPI JSON explicitly at a stable path
+  const httpAdapter = app.getHttpAdapter();
+  const server: any = (httpAdapter as any).getInstance
+    ? (httpAdapter as any).getInstance()
+    : (httpAdapter as any);
+  if (server && typeof server.get === 'function') {
+    server.get('/openapi.json', (_req: any, res: any) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(document);
+    });
+  }
+
+  // Export OpenAPI spec during build when requested
   if (process.env.EXPORT_OPENAPI === 'true') {
-    const outputPath = path.resolve(__dirname, '../../openapi.json');
+    const outputPath = process.env.OPENAPI_OUTPUT_PATH
+      ? path.resolve(process.env.OPENAPI_OUTPUT_PATH)
+      : path.resolve(__dirname, '../../openapi.json');
+    const dir = path.dirname(outputPath);
+    try {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    } catch {}
     fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
     console.log(`OpenAPI spec exported to: ${outputPath}`);
     await app.close();
