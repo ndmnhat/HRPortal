@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ProfileResponseDto } from './dto/profile-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,7 +12,7 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  async getProfile(userId: number): Promise<User> {
+  async getProfile(userId: number): Promise<ProfileResponseDto> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       select: [
@@ -39,10 +40,17 @@ export class UsersService {
   async updateProfile(
     userId: number,
     updateProfileDto: UpdateProfileDto,
-  ): Promise<User> {
+  ): Promise<ProfileResponseDto> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
+
+    const existingUser = await this.userRepository.findOne({
+      where: { id: Not(userId), email: updateProfileDto.email },
+    });
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists');
+    }
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -53,6 +61,6 @@ export class UsersService {
     await this.userRepository.save(user);
 
     const { password, ...result } = user;
-    return result as User;
+    return result as ProfileResponseDto;
   }
 }

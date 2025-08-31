@@ -91,7 +91,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "User profile retrieved successfully"
+            "description": "User profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponseDto"
+                }
+              }
+            }
           },
           "404": {
             "description": "User not found"
@@ -122,10 +129,20 @@
         },
         "responses": {
           "200": {
-            "description": "Profile updated successfully"
+            "description": "Profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponseDto"
+                }
+              }
+            }
           },
           "404": {
             "description": "User not found"
+          },
+          "409": {
+            "description": "User already exists"
           }
         },
         "security": [
@@ -236,6 +253,65 @@
           "full_name",
           "email",
           "password"
+        ]
+      },
+      "ProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "address_line_1": {
+            "type": "string",
+            "nullable": true
+          },
+          "address_line_2": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone_number": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "nok_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "nok_phone_number": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "full_name",
+          "email",
+          "address_line_1",
+          "address_line_2",
+          "phone_number",
+          "city",
+          "state",
+          "country",
+          "nok_name",
+          "nok_phone_number"
         ]
       },
       "UpdateProfileDto": {
