@@ -9,7 +9,7 @@ export const databaseTestConfig = (): TypeOrmModuleOptions => ({
   database: process.env.TEST_DB_NAME || 'hr_portal_test',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   synchronize: true,
-  dropSchema: true,
+  dropSchema: false,
   logging: false,
   migrations: [],
   migrationsRun: false,

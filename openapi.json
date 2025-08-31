@@ -85,6 +85,29 @@
         ]
       }
     },
+    "/api/v1/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Logout successful"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "User logout",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
     "/api/v1/profile": {
       "get": {
         "operationId": "UsersController_getProfile",

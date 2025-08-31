@@ -17,6 +17,7 @@ import {
 import { HomeIcon, BriefcaseIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { useRouter, usePathname } from 'next/navigation';
 import { UserCircleIcon } from '@heroicons/react/24/solid';
+import { authApi } from '@/services/apiClient';
 
 interface SidebarProps {
   userName?: string;
@@ -30,9 +31,15 @@ export default function Sidebar({ userName = 'User', userEmail = 'user@example.c
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    router.push('/login');
+  const handleLogout = async () => {
+    try {
+      await authApi.authControllerLogout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem('token');
+      router.push('/login');
+    }
   };
 
   const menuItems = [

@@ -51,7 +51,7 @@ describe('AuthService', () => {
   describe('register', () => {
     const registerDto = {
       email: 'test@example.com',
-      password: 'password123',
+      password: 'password123!!',
       full_name: 'Test User',
     };
 
@@ -113,7 +113,7 @@ describe('AuthService', () => {
   describe('login', () => {
     const loginDto = {
       email: 'test@example.com',
-      password: 'password123',
+      password: 'password123!!',
     };
 
     const mockUser = {

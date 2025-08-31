@@ -28,6 +28,7 @@ describe('UsersService', () => {
 
     service = module.get<UsersService>(UsersService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    
   });
 
   afterEach(() => {
@@ -112,7 +113,9 @@ describe('UsersService', () => {
 
     it('should update user profile successfully', async () => {
       const updatedUser = { ...existingUser, ...updateProfileDto };
-      mockUserRepository.findOne.mockResolvedValue(existingUser);
+      mockUserRepository.findOne
+        .mockResolvedValueOnce(existingUser)
+        .mockResolvedValueOnce(null);
       mockUserRepository.save.mockResolvedValue(updatedUser);
 
       const result = await service.updateProfile(userId, updateProfileDto);
@@ -147,7 +150,9 @@ describe('UsersService', () => {
       };
 
       const updatedUser = { ...existingUser, ...partialUpdateDto };
-      mockUserRepository.findOne.mockResolvedValue(existingUser);
+      mockUserRepository.findOne
+        .mockResolvedValueOnce(existingUser)
+        .mockResolvedValueOnce(null);
       mockUserRepository.save.mockResolvedValue(updatedUser);
 
       const result = await service.updateProfile(userId, partialUpdateDto);
@@ -170,7 +175,9 @@ describe('UsersService', () => {
       };
 
       const updatedUser = { ...existingUser, ...emailUpdateDto };
-      mockUserRepository.findOne.mockResolvedValue(existingUser);
+      mockUserRepository.findOne
+        .mockResolvedValueOnce(existingUser)
+        .mockResolvedValueOnce(null);
       mockUserRepository.save.mockResolvedValue(updatedUser);
 
       const result = await service.updateProfile(userId, emailUpdateDto);

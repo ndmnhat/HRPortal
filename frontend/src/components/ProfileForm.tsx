@@ -17,7 +17,8 @@ import {
 import { useForm } from 'react-hook-form';
 import { usersApi } from '@/services/apiClient';
 import { UpdateProfileDto } from '@/api/generated/models';
-import { useAppSelector } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setUserProfile } from '@/store/slices/userSlice';
 
 interface ProfileFormData {
   full_name: string;
@@ -36,6 +37,7 @@ export default function ProfileForm() {
   const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
   const userProfile = useAppSelector((state) => state.user.profile);
   
   const [notification, setNotification] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
@@ -106,7 +108,9 @@ export default function ProfileForm() {
         country: data.country || undefined,
       };
       
-      await usersApi.usersControllerUpdateProfile({ updateProfileDto: updateData });
+      const updatedProfile = await usersApi.usersControllerUpdateProfile({ updateProfileDto: updateData });
+      dispatch(setUserProfile(updatedProfile.data));
+
       setNotification({ open: true, message: 'Profile updated successfully!', severity: 'success' });
     } catch (error:any) {
       console.error('Failed to update profile:', error);

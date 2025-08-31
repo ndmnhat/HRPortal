@@ -15,6 +15,14 @@ services:
     networks:
       - hr_portal_network
 
+  redis:
+    image: redis:7-alpine
+    container_name: hr_portal_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - hr_portal_network
+
   backend:
     build:
       context: ./backend
@@ -29,14 +37,17 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_NAME: hr_portal
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       - postgres
+      - redis
     volumes:
       - ./backend:/app
       - /app/node_modules
     networks:
       - hr_portal_network
-    command: npm run start:dev
+    command: npm run start:prod
 
   frontend:
     build:
@@ -55,7 +66,7 @@ services:
       - /app/.next
     networks:
       - hr_portal_network
-    command: npm run dev
+    command: npm run start
 
 volumes:
   postgres_data:

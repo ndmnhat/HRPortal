@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm';
 describe('Authentication (e2e)', () => {
   let app: INestApplication;
   let authToken: string;
+  let dataSource: DataSource;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -22,13 +23,16 @@ describe('Authentication (e2e)', () => {
       }),
     );
     await app.init();
+    
+    // Get data source and clean up any existing test data
+    dataSource = app.get(DataSource);
+    await dataSource.query('DELETE FROM users WHERE email LIKE $1', ['test%']);
   });
 
   afterAll(async () => {
     // Clean up test data
     try {
-      const dataSource = app.get(DataSource);
-      if (dataSource.isInitialized) {
+      if (dataSource && dataSource.isInitialized) {
         await dataSource.query('DELETE FROM users WHERE email LIKE $1', [
           'test%',
         ]);
@@ -40,23 +44,22 @@ describe('Authentication (e2e)', () => {
   });
 
   describe('/api/v1/register (POST)', () => {
-    it('should register a new user', () => {
-      return request(app.getHttpServer())
+    it('should register a new user', async () => {
+      const response = await request(app.getHttpServer())
         .post('/api/v1/register')
         .send({
           email: 'test.e2e@example.com',
-          password: 'TestPassword123',
-          full_name: 'E2E Test User',
-        })
-        .expect(201)
-        .expect((res) => {
-          expect(res.body).toHaveProperty('accessToken');
-          expect(res.body).toHaveProperty('user');
-          expect(res.body.user).toHaveProperty('id');
-          expect(res.body.user.email).toBe('test.e2e@example.com');
-          expect(res.body.user.full_name).toBe('E2E Test User');
-          authToken = res.body.accessToken;
+          password: 'TestPass123!!',
+          full_name: 'Test User',
         });
+        
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body).toHaveProperty('user');
+      expect(response.body.user).toHaveProperty('id');
+      expect(response.body.user.email).toBe('test.e2e@example.com');
+      expect(response.body.user.full_name).toBe('Test User');
+      authToken = response.body.accessToken;
     });
 
     it('should not register duplicate user', () => {
@@ -64,7 +67,7 @@ describe('Authentication (e2e)', () => {
         .post('/api/v1/register')
         .send({
           email: 'test.e2e@example.com',
-          password: 'AnotherPassword123',
+          password: 'AnotherPass123!!',
           full_name: 'Duplicate User',
         })
         .expect(409)
@@ -90,7 +93,7 @@ describe('Authentication (e2e)', () => {
         .post('/api/v1/register')
         .send({
           email: 'invalid-email',
-          password: 'Password123',
+          password: 'Password123!!',
           full_name: 'Test User',
         })
         .expect(400);
@@ -103,9 +106,9 @@ describe('Authentication (e2e)', () => {
         .post('/api/v1/login')
         .send({
           email: 'test.e2e@example.com',
-          password: 'TestPassword123',
+          password: 'TestPass123!!',
         })
-        .expect(201)
+        .expect(200)
         .expect((res) => {
           expect(res.body).toHaveProperty('accessToken');
           expect(res.body).toHaveProperty('user');
@@ -131,7 +134,7 @@ describe('Authentication (e2e)', () => {
         .post('/api/v1/login')
         .send({
           email: 'nonexistent@example.com',
-          password: 'Password123',
+          password: 'Password123!!',
         })
         .expect(401);
     });
@@ -146,7 +149,7 @@ describe('Authentication (e2e)', () => {
         .expect((res) => {
           expect(res.body).toHaveProperty('id');
           expect(res.body).toHaveProperty('email', 'test.e2e@example.com');
-          expect(res.body).toHaveProperty('full_name', 'E2E Test User');
+          expect(res.body).toHaveProperty('full_name', 'Test User');
           expect(res.body).not.toHaveProperty('password');
         });
     });
