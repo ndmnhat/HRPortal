@@ -5,6 +5,7 @@ SPEC_FILE="/shared/openapi.json"
 
 echo "[entrypoint] Installing missing dependencies (if any)"
 npm ci || true
+npm install @openapitools/openapi-generator-cli -g
 
 if [ -f "$SPEC_FILE" ]; then
   echo "[entrypoint] Found shared spec at $SPEC_FILE"
@@ -25,12 +26,8 @@ else
   npm run generate:api:remote || { echo "[entrypoint] Codegen from URL failed"; exit 1; }
 fi
 
-# Start the app
-if [ "${NODE_ENV:-development}" = "production" ]; then
-  echo "[entrypoint] Starting Next in production (start)"
-  exec npm run start
-else
-  echo "[entrypoint] Starting Next in development (dev)"
-  exec npm run dev
-fi
+npm run build
 
+# Start the app
+echo "[entrypoint] Starting Next in production (start)"
+exec npm run start

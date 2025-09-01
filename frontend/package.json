@@ -8,8 +8,8 @@
     "start": "next start -p 3001",
     "lint": "eslint",
     "generate:api": "openapi-generator-cli generate -i ../openapi.json -g typescript-axios -o ./src/api/generated --additional-properties=supportsES6=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,withInterfaces=true,useSingleRequestParameter=true",
-    "generate:api:remote": "openapi-generator-cli generate -i $OPENAPI_SPEC_URL -g typescript-axios -o ./src/api/generated --additional-properties=supportsES6=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,withInterfaces=true,useSingleRequestParameter=true"
-    ,"generate:api:file": "openapi-generator-cli generate -i $OPENAPI_SPEC_FILE -g typescript-axios -o ./src/api/generated --additional-properties=supportsES6=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,withInterfaces=true,useSingleRequestParameter=true"
+    "generate:api:remote": "openapi-generator-cli generate -i $OPENAPI_SPEC_URL -g typescript-axios -o ./src/api/generated --additional-properties=supportsES6=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,withInterfaces=true,useSingleRequestParameter=true",
+    "generate:api:file": "openapi-generator-cli generate -i $OPENAPI_SPEC_FILE -g typescript-axios -o ./src/api/generated --additional-properties=supportsES6=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,withInterfaces=true,useSingleRequestParameter=true"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -34,6 +34,6 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "5.9.2"
   }
 }

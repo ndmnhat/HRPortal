@@ -10,7 +10,7 @@
     "dev:backend": "cd backend && npm run start:dev",
     "dev:frontend": "cd frontend && npm run dev",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "docker:up": "docker-compose up",
+    "docker:up": "docker-compose up --force-recreate",
     "docker:down": "docker-compose down"
   },
   "devDependencies": {
