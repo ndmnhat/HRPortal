@@ -1,5 +1,7 @@
 # HR Portal
 
+🔗 **Live Demo**: [https://quick-kodiak-trusty.ngrok-free.app/app](https://quick-kodiak-trusty.ngrok-free.app/app)
+
 ## Tech Stack
 
 ### Backend
